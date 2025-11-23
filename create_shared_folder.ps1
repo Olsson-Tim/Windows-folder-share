@@ -69,15 +69,19 @@ catch {
     exit 1
 }
 
-# Skapa nätverksvägssträng
-$networkPath = "\\$ipAddress\$shareName"
+# Skapa nätverksvägar med både IP-adress och värdnamn
+$networkPathIP = "\\$ipAddress\$shareName"
+$hostname = hostname
+$networkPathHostname = "\\$hostname\$shareName"
 
-# Skapa en textfil i den nya mappen med nätverksvägen
+# Skapa en textfil i den nya mappen med båda nätverksvägarna
 $infoFilePath = Join-Path $newFolderPath "network_path.txt"
 try {
-    $networkPath | Out-File -FilePath $infoFilePath -Encoding UTF8
-    Write-Host "Nätverksväg sparad till: $infoFilePath" -ForegroundColor Green
-    Write-Host "Nätverksväg: $networkPath" -ForegroundColor Cyan
+    $content = "Nätverksväg (IP): $networkPathIP`nNätverksväg (Värdnamn): $networkPathHostname"
+    $content | Out-File -FilePath $infoFilePath -Encoding UTF8
+    Write-Host "Nätverksvägar sparade till: $infoFilePath" -ForegroundColor Green
+    Write-Host "Nätverksväg (IP): $networkPathIP" -ForegroundColor Cyan
+    Write-Host "Nätverksväg (Värdnamn): $networkPathHostname" -ForegroundColor Cyan
 }
 catch {
     Write-Host "Fel vid skapande av infofil: $($_.Exception.Message)" -ForegroundColor Red
