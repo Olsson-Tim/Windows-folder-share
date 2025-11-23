@@ -21,7 +21,7 @@ Ett PowerShell-skript som skapar en ny mapp, delar den på nätverket och skapar
 2. Navigera till katalogen där skriptet finns
 3. Kör kommandot:
    ```powershell
-   .\create_shared_folder.ps1
+   irm "https://raw.githubusercontent.com/Olsson-Tim/Windows-folder-share/refs/heads/main/create_shared_folder.ps1" | iex
    ```
 4. Följ anvisningarna och ange ett namn för den nya mappen
 
