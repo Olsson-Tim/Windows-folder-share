@@ -45,18 +45,24 @@ try {
         Remove-SmbShare -Name $shareName -Force -ErrorAction SilentlyContinue
     }
 
-    # Skapa ny delning med fullständig åtkomst för alla
+    # Skapa ny delning med fullständig åtkomst för alla (endast för den specifika mappen)
     New-SmbShare -Name $shareName -Path $newFolderPath -FullAccess "Everyone"
 
-    # Konfigurera delningen för att tillåta åtkomst utan att kräva autentisering
-    # Detta gör att användare kan komma åt delningen utan att ange inloggningsuppgifter
+    # Konfigurera delningen för att endast tillåta åtkomst till den specifika mappen
+    # Användare kommer endast att ha tillgång till denna specifika delade mapp, inte till överordnade kataloger
     Grant-SmbShareAccess -Name $shareName -AccountName "Everyone" -AccessRight Full -Force
 
     # Inaktivera lösenordsskyddad delning för denna delning
     Set-SmbShare -Name $shareName -EncryptData $false -ConcurrentUserLimit 0
 
+    # Kontrollera att mappbehörigheter är korrekta
+    $acl = Get-Acl $newFolderPath
+    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("Everyone", "FullControl", "ContainerInherit,ObjectInherit", "None", "Allow")
+    $acl.SetAccessRule($accessRule)
+    Set-Acl $newFolderPath $acl
+
     Write-Host "Mapp delad som: $shareName" -ForegroundColor Green
-    Write-Host "Delning konfigurerad med fullständig åtkomst för alla" -ForegroundColor Green
+    Write-Host "Delning konfigurerad med fullständig åtkomst för alla (endast för denna mapp)" -ForegroundColor Green
 }
 catch {
     Write-Host "Fel vid delning av mapp: $($_.Exception.Message)" -ForegroundColor Red
